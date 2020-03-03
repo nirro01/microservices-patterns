@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+
+  zookeeper:
+    restart: "no"
+    container_name: ZooKeeper
+    image: wurstmeister/zookeeper
+    ports:
+      - '2181:2181'
+      
+  kafka:
+    restart: "no"
+    container_name: Kafka
+    image: wurstmeister/kafka
+    ports:
+      - '9092:9092'
+    depends_on:
+      - "zookeeper"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    ports:
+        - 27017:27017
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
